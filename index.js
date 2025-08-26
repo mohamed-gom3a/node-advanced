@@ -1,3 +1,5 @@
+process.env.NODE_ENV = 'ci';
+require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` });
 const express = require('express');
 const mongoose = require('mongoose');
 const cookieSession = require('cookie-session');
@@ -8,8 +10,11 @@ const keys = require('./config/keys');
 require('./models/User');
 require('./models/Blog');
 require('./services/passport');
+require('./services/cache');
 
 mongoose.Promise = global.Promise;
+
+
 mongoose.connect(keys.mongoURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -24,7 +29,7 @@ app.use(
     keys: [keys.cookieKey]
   })
 );
-app.use(passport.initialize());
+app.use(passport.initialize()); 
 app.use(passport.session());
 
 require('./routes/authRoutes')(app);
